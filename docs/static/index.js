@@ -19,7 +19,11 @@ const app = Elm.Main.init(
 
 const video = document.getElementById(flags.ids.video);
 app.ports.startCamera.subscribe(function() {
-  navigator.mediaDevices.getUserMedia({ video: flags.size, audio: false })
+  navigator.mediaDevices.getUserMedia(
+    { video: {...flags.size, facingMode: "environment" }
+    , audio: false
+    }
+  )
   .then(stream => video.srcObject = stream)
   .catch(err => alert(`${err.name} ${err.message}`));
 });
