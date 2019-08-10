@@ -4310,9 +4310,11 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Main$Model = function (config) {
-	return {config: config};
-};
+var author$project$Main$Model = F3(
+	function (config, image, error) {
+		return {config: config, error: error, image: image};
+	});
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$True = {$: 'True'};
 var elm$core$Result$isOk = function (result) {
@@ -4576,7 +4578,6 @@ var elm$core$Array$initialize = F2(
 var elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
 };
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -4792,10 +4793,65 @@ var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$init = function (config) {
 	return _Utils_Tuple2(
-		author$project$Main$Model(config),
+		A3(author$project$Main$Model, config, elm$core$Maybe$Nothing, ''),
 		elm$core$Platform$Cmd$none);
 };
+var author$project$AnaQRam$Image$ImageData = F3(
+	function (data, width, height) {
+		return {data: data, height: height, width: width};
+	});
+var elm$json$Json$Decode$array = _Json_decodeArray;
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$int = _Json_decodeInt;
+var elm$json$Json$Decode$map3 = _Json_map3;
+var author$project$AnaQRam$Image$decoder = A4(
+	elm$json$Json$Decode$map3,
+	author$project$AnaQRam$Image$ImageData,
+	A2(
+		elm$json$Json$Decode$field,
+		'data',
+		elm$json$Json$Decode$array(elm$json$Json$Decode$int)),
+	A2(elm$json$Json$Decode$field, 'width', elm$json$Json$Decode$int),
+	A2(elm$json$Json$Decode$field, 'height', elm$json$Json$Decode$int));
+var elm$json$Json$Decode$value = _Json_decodeValue;
+var author$project$AnaQRam$Image$updateImage = _Platform_incomingPort('updateImage', elm$json$Json$Decode$value);
+var elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var elm$json$Json$Decode$decodeValue = _Json_run;
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$null = _Json_decodeNull;
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
+var elm$json$Json$Decode$nullable = function (decoder) {
+	return elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				elm$json$Json$Decode$null(elm$core$Maybe$Nothing),
+				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, decoder)
+			]));
+};
+var author$project$AnaQRam$Image$updateImageWithDecode = function (msg) {
+	return author$project$AnaQRam$Image$updateImage(
+		A2(
+			elm$core$Basics$composeL,
+			msg,
+			elm$json$Json$Decode$decodeValue(
+				elm$json$Json$Decode$nullable(author$project$AnaQRam$Image$decoder))));
+};
+var author$project$Main$UpdateImage = function (a) {
+	return {$: 'UpdateImage', a: a};
+};
+var author$project$Main$subscriptions = function (_n0) {
+	return author$project$AnaQRam$Image$updateImageWithDecode(author$project$Main$UpdateImage);
+};
 var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$AnaQRam$Image$captureImage = _Platform_outgoingPort(
+	'captureImage',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
 var author$project$AnaQRam$Image$startCamera = _Platform_outgoingPort(
 	'startCamera',
 	function ($) {
@@ -4803,15 +4859,66 @@ var author$project$AnaQRam$Image$startCamera = _Platform_outgoingPort(
 	});
 var author$project$Main$update = F2(
 	function (msg, model) {
-		return _Utils_Tuple2(
-			model,
-			author$project$AnaQRam$Image$startCamera(_Utils_Tuple0));
+		switch (msg.$) {
+			case 'OnCamera':
+				return _Utils_Tuple2(
+					model,
+					author$project$AnaQRam$Image$startCamera(_Utils_Tuple0));
+			case 'CaptureImage':
+				return _Utils_Tuple2(
+					model,
+					author$project$AnaQRam$Image$captureImage(_Utils_Tuple0));
+			default:
+				if (msg.a.$ === 'Ok') {
+					var image = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{image: image}),
+						elm$core$Platform$Cmd$none);
+				} else {
+					var message = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								error: elm$json$Json$Decode$errorToString(message)
+							}),
+						elm$core$Platform$Cmd$none);
+				}
+		}
 	});
+var elm$core$Array$length = function (_n0) {
+	var len = _n0.a;
+	return len;
+};
+var author$project$AnaQRam$Image$size = function (image) {
+	return elm$core$Array$length(image.data);
+};
+var author$project$Main$CaptureImage = {$: 'CaptureImage'};
 var author$project$Main$OnCamera = {$: 'OnCamera'};
+var elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
-var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
@@ -4827,6 +4934,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	}
 };
 var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$canvas = _VirtualDom_node('canvas');
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$p = _VirtualDom_node('p');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
@@ -4882,6 +4990,10 @@ var elm$html$Html$Events$onClick = function (msg) {
 		elm$json$Json$Decode$succeed(msg));
 };
 var author$project$Main$view = function (model) {
+	var imageSize = A2(
+		elm$core$Maybe$withDefault,
+		0,
+		A2(elm$core$Maybe$map, author$project$AnaQRam$Image$size, model.image));
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
@@ -4891,7 +5003,7 @@ var author$project$Main$view = function (model) {
 				elm$html$Html$video,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$id(model.config.video),
+						elm$html$Html$Attributes$id(model.config.ids.video),
 						A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
 						elm$html$Html$Attributes$autoplay(true),
 						elm$html$Html$Attributes$width(model.config.size.width),
@@ -4912,7 +5024,39 @@ var author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								elm$html$Html$text('映像表示開始')
+							])),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Events$onClick(author$project$Main$CaptureImage)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('静止画取得')
 							]))
+					])),
+				A2(
+				elm$html$Html$canvas,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$id(model.config.ids.capture)
+					]),
+				_List_Nil),
+				A2(
+				elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$text(
+						'Image size: ' + elm$core$String$fromInt(imageSize))
+					])),
+				A2(
+				elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$text('Error: ' + model.error)
 					]))
 			]));
 };
@@ -5212,45 +5356,48 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$element = _Browser_element;
-var elm$core$Platform$Sub$batch = _Platform_batch;
-var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var elm$json$Json$Decode$andThen = _Json_andThen;
-var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$int = _Json_decodeInt;
 var elm$json$Json$Decode$string = _Json_decodeString;
 var author$project$Main$main = elm$browser$Browser$element(
-	{
-		init: author$project$Main$init,
-		subscriptions: function (_n0) {
-			return elm$core$Platform$Sub$none;
-		},
-		update: author$project$Main$update,
-		view: author$project$Main$view
-	});
+	{init: author$project$Main$init, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	A2(
 		elm$json$Json$Decode$andThen,
-		function (video) {
+		function (size) {
 			return A2(
 				elm$json$Json$Decode$andThen,
-				function (size) {
+				function (ids) {
 					return elm$json$Json$Decode$succeed(
-						{size: size, video: video});
+						{ids: ids, size: size});
 				},
 				A2(
 					elm$json$Json$Decode$field,
-					'size',
+					'ids',
 					A2(
 						elm$json$Json$Decode$andThen,
-						function (width) {
+						function (video) {
 							return A2(
 								elm$json$Json$Decode$andThen,
-								function (height) {
+								function (capture) {
 									return elm$json$Json$Decode$succeed(
-										{height: height, width: width});
+										{capture: capture, video: video});
 								},
-								A2(elm$json$Json$Decode$field, 'height', elm$json$Json$Decode$int));
+								A2(elm$json$Json$Decode$field, 'capture', elm$json$Json$Decode$string));
 						},
-						A2(elm$json$Json$Decode$field, 'width', elm$json$Json$Decode$int))));
+						A2(elm$json$Json$Decode$field, 'video', elm$json$Json$Decode$string))));
 		},
-		A2(elm$json$Json$Decode$field, 'video', elm$json$Json$Decode$string)))(0)}});}(this));
+		A2(
+			elm$json$Json$Decode$field,
+			'size',
+			A2(
+				elm$json$Json$Decode$andThen,
+				function (width) {
+					return A2(
+						elm$json$Json$Decode$andThen,
+						function (height) {
+							return elm$json$Json$Decode$succeed(
+								{height: height, width: width});
+						},
+						A2(elm$json$Json$Decode$field, 'height', elm$json$Json$Decode$int));
+				},
+				A2(elm$json$Json$Decode$field, 'width', elm$json$Json$Decode$int)))))(0)}});}(this));
