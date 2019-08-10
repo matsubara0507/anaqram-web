@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import AnaQRam.Image as Image exposing (ImageData)
+import AnaQRam.QRCode as QRCode exposing (QRCode)
 import Browser as Browser
 import Html as Html exposing (..)
 import Html.Attributes exposing (autoplay, height, id, style, width)
@@ -8,7 +8,7 @@ import Html.Events exposing (onClick)
 import Json.Decode exposing (Error, errorToString)
 
 
-main : Program Image.Config Model Msg
+main : Program QRCode.Config Model Msg
 main =
     Browser.element
         { init = init
@@ -19,13 +19,13 @@ main =
 
 
 type alias Model =
-    { config : Image.Config
-    , image : Maybe ImageData
+    { config : QRCode.Config
+    , qrcode : Maybe QRCode
     , error : String
     }
 
 
-init : Image.Config -> ( Model, Cmd Msg )
+init : QRCode.Config -> ( Model, Cmd Msg )
 init config =
     ( Model config Nothing "", Cmd.none )
 
@@ -33,32 +33,32 @@ init config =
 type Msg
     = OnCamera
     | CaptureImage
-    | UpdateImage (Result Error (Maybe ImageData))
+    | UpdateQRCode (Result Error (Maybe QRCode))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnCamera ->
-            ( model, Image.startCamera () )
+            ( model, QRCode.startCamera () )
 
         CaptureImage ->
-            ( model, Image.captureImage () )
+            ( model, QRCode.captureImage () )
 
-        UpdateImage (Ok image) ->
-            ( { model | image = image }, Cmd.none )
+        UpdateQRCode (Ok qrcode) ->
+            ( { model | qrcode = qrcode }, Cmd.none )
 
-        UpdateImage (Err message) ->
+        UpdateQRCode (Err message) ->
             ( { model | error = errorToString message }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     let
-        imageSize =
-            model.image
-                |> Maybe.map Image.size
-                |> Maybe.withDefault 0
+        code =
+            model.qrcode
+                |> Maybe.map .data
+                |> Maybe.withDefault ""
     in
     div []
         [ video
@@ -70,15 +70,15 @@ view model =
             ]
             []
         , p []
-            [ button [ onClick OnCamera ] [ text "映像表示開始" ]
-            , button [ onClick CaptureImage ] [ text "静止画取得" ]
+            [ button [ onClick OnCamera ] [ text "On Camera" ]
+            , button [ onClick CaptureImage ] [ text "Capture Image" ]
             ]
         , canvas [ id model.config.ids.capture ] []
-        , p [] [ text ("Image size: " ++ String.fromInt imageSize) ]
+        , p [] [ text ("QR Code: " ++ code) ]
         , p [] [ text ("Error: " ++ model.error) ]
         ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Image.updateImageWithDecode UpdateImage
+    QRCode.updateQRCodeWithDecode UpdateQRCode

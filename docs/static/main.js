@@ -4311,8 +4311,8 @@ function _Browser_load(url)
 	}));
 }
 var author$project$Main$Model = F3(
-	function (config, image, error) {
-		return {config: config, error: error, image: image};
+	function (config, qrcode, error) {
+		return {config: config, error: error, qrcode: qrcode};
 	});
 var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Basics$False = {$: 'False'};
@@ -4796,32 +4796,24 @@ var author$project$Main$init = function (config) {
 		A3(author$project$Main$Model, config, elm$core$Maybe$Nothing, ''),
 		elm$core$Platform$Cmd$none);
 };
-var author$project$AnaQRam$Image$ImageData = F3(
-	function (data, width, height) {
-		return {data: data, height: height, width: width};
-	});
-var elm$json$Json$Decode$array = _Json_decodeArray;
+var author$project$AnaQRam$QRCode$QRCode = function (data) {
+	return {data: data};
+};
 var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$int = _Json_decodeInt;
-var elm$json$Json$Decode$map3 = _Json_map3;
-var author$project$AnaQRam$Image$decoder = A4(
-	elm$json$Json$Decode$map3,
-	author$project$AnaQRam$Image$ImageData,
-	A2(
-		elm$json$Json$Decode$field,
-		'data',
-		elm$json$Json$Decode$array(elm$json$Json$Decode$int)),
-	A2(elm$json$Json$Decode$field, 'width', elm$json$Json$Decode$int),
-	A2(elm$json$Json$Decode$field, 'height', elm$json$Json$Decode$int));
+var elm$json$Json$Decode$map = _Json_map1;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var author$project$AnaQRam$QRCode$decoder = A2(
+	elm$json$Json$Decode$map,
+	author$project$AnaQRam$QRCode$QRCode,
+	A2(elm$json$Json$Decode$field, 'data', elm$json$Json$Decode$string));
 var elm$json$Json$Decode$value = _Json_decodeValue;
-var author$project$AnaQRam$Image$updateImage = _Platform_incomingPort('updateImage', elm$json$Json$Decode$value);
+var author$project$AnaQRam$QRCode$updateQRCode = _Platform_incomingPort('updateQRCode', elm$json$Json$Decode$value);
 var elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
 			f(x));
 	});
 var elm$json$Json$Decode$decodeValue = _Json_run;
-var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var elm$json$Json$Decode$nullable = function (decoder) {
@@ -4832,27 +4824,27 @@ var elm$json$Json$Decode$nullable = function (decoder) {
 				A2(elm$json$Json$Decode$map, elm$core$Maybe$Just, decoder)
 			]));
 };
-var author$project$AnaQRam$Image$updateImageWithDecode = function (msg) {
-	return author$project$AnaQRam$Image$updateImage(
+var author$project$AnaQRam$QRCode$updateQRCodeWithDecode = function (msg) {
+	return author$project$AnaQRam$QRCode$updateQRCode(
 		A2(
 			elm$core$Basics$composeL,
 			msg,
 			elm$json$Json$Decode$decodeValue(
-				elm$json$Json$Decode$nullable(author$project$AnaQRam$Image$decoder))));
+				elm$json$Json$Decode$nullable(author$project$AnaQRam$QRCode$decoder))));
 };
-var author$project$Main$UpdateImage = function (a) {
-	return {$: 'UpdateImage', a: a};
+var author$project$Main$UpdateQRCode = function (a) {
+	return {$: 'UpdateQRCode', a: a};
 };
 var author$project$Main$subscriptions = function (_n0) {
-	return author$project$AnaQRam$Image$updateImageWithDecode(author$project$Main$UpdateImage);
+	return author$project$AnaQRam$QRCode$updateQRCodeWithDecode(author$project$Main$UpdateQRCode);
 };
 var elm$json$Json$Encode$null = _Json_encodeNull;
-var author$project$AnaQRam$Image$captureImage = _Platform_outgoingPort(
+var author$project$AnaQRam$QRCode$captureImage = _Platform_outgoingPort(
 	'captureImage',
 	function ($) {
 		return elm$json$Json$Encode$null;
 	});
-var author$project$AnaQRam$Image$startCamera = _Platform_outgoingPort(
+var author$project$AnaQRam$QRCode$startCamera = _Platform_outgoingPort(
 	'startCamera',
 	function ($) {
 		return elm$json$Json$Encode$null;
@@ -4863,18 +4855,18 @@ var author$project$Main$update = F2(
 			case 'OnCamera':
 				return _Utils_Tuple2(
 					model,
-					author$project$AnaQRam$Image$startCamera(_Utils_Tuple0));
+					author$project$AnaQRam$QRCode$startCamera(_Utils_Tuple0));
 			case 'CaptureImage':
 				return _Utils_Tuple2(
 					model,
-					author$project$AnaQRam$Image$captureImage(_Utils_Tuple0));
+					author$project$AnaQRam$QRCode$captureImage(_Utils_Tuple0));
 			default:
 				if (msg.a.$ === 'Ok') {
-					var image = msg.a.a;
+					var qrcode = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{image: image}),
+							{qrcode: qrcode}),
 						elm$core$Platform$Cmd$none);
 				} else {
 					var message = msg.a.a;
@@ -4888,13 +4880,6 @@ var author$project$Main$update = F2(
 				}
 		}
 	});
-var elm$core$Array$length = function (_n0) {
-	var len = _n0.a;
-	return len;
-};
-var author$project$AnaQRam$Image$size = function (image) {
-	return elm$core$Array$length(image.data);
-};
 var author$project$Main$CaptureImage = {$: 'CaptureImage'};
 var author$project$Main$OnCamera = {$: 'OnCamera'};
 var elm$core$Maybe$map = F2(
@@ -4990,10 +4975,15 @@ var elm$html$Html$Events$onClick = function (msg) {
 		elm$json$Json$Decode$succeed(msg));
 };
 var author$project$Main$view = function (model) {
-	var imageSize = A2(
+	var code = A2(
 		elm$core$Maybe$withDefault,
-		0,
-		A2(elm$core$Maybe$map, author$project$AnaQRam$Image$size, model.image));
+		'',
+		A2(
+			elm$core$Maybe$map,
+			function ($) {
+				return $.data;
+			},
+			model.qrcode));
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
@@ -5023,7 +5013,7 @@ var author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('映像表示開始')
+								elm$html$Html$text('On Camera')
 							])),
 						A2(
 						elm$html$Html$button,
@@ -5033,7 +5023,7 @@ var author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('静止画取得')
+								elm$html$Html$text('Capture Image')
 							]))
 					])),
 				A2(
@@ -5048,8 +5038,7 @@ var author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						elm$html$Html$text(
-						'Image size: ' + elm$core$String$fromInt(imageSize))
+						elm$html$Html$text('QR Code: ' + code)
 					])),
 				A2(
 				elm$html$Html$p,
@@ -5357,7 +5346,7 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$element = _Browser_element;
 var elm$json$Json$Decode$andThen = _Json_andThen;
-var elm$json$Json$Decode$string = _Json_decodeString;
+var elm$json$Json$Decode$int = _Json_decodeInt;
 var author$project$Main$main = elm$browser$Browser$element(
 	{init: author$project$Main$init, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
