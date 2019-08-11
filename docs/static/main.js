@@ -4901,6 +4901,9 @@ var elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
+var elm$core$String$isEmpty = function (string) {
+	return string === '';
+};
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -4918,12 +4921,54 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$button = _VirtualDom_node('button');
-var elm$html$Html$canvas = _VirtualDom_node('canvas');
 var elm$html$Html$div = _VirtualDom_node('div');
-var elm$html$Html$p = _VirtualDom_node('p');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$json$Json$Encode$string = _Json_wrap;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var author$project$Main$viewResult = function (model) {
+	var code = A2(
+		elm$core$Maybe$withDefault,
+		'',
+		A2(
+			elm$core$Maybe$map,
+			function ($) {
+				return $.data;
+			},
+			model.qrcode));
+	var attr = elm$html$Html$Attributes$class('mx-5 mb-2 flash text-left');
+	return elm$core$String$isEmpty(model.error) ? A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				attr,
+				elm$html$Html$Attributes$class('flash-success')
+			]),
+		_List_fromArray(
+			[
+				elm$html$Html$text('QR Code: ' + code)
+			])) : A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				attr,
+				elm$html$Html$Attributes$class('flash-error')
+			]),
+		_List_fromArray(
+			[
+				elm$html$Html$text('Error: ' + model.error)
+			]));
+};
+var elm$html$Html$button = _VirtualDom_node('button');
+var elm$html$Html$canvas = _VirtualDom_node('canvas');
+var elm$html$Html$p = _VirtualDom_node('p');
 var elm$html$Html$video = _VirtualDom_node('video');
 var elm$json$Json$Encode$bool = _Json_wrap;
 var elm$html$Html$Attributes$boolProperty = F2(
@@ -4940,17 +4985,11 @@ var elm$html$Html$Attributes$height = function (n) {
 		'height',
 		elm$core$String$fromInt(n));
 };
-var elm$json$Json$Encode$string = _Json_wrap;
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
+var elm$html$Html$Attributes$hidden = elm$html$Html$Attributes$boolProperty('hidden');
 var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
+var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$width = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -4974,79 +5013,98 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
+var author$project$Main$viewBody = function (model) {
+	return _List_fromArray(
+		[
+			A2(
+			elm$html$Html$video,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('my-2'),
+					elm$html$Html$Attributes$id(model.config.ids.video),
+					A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
+					elm$html$Html$Attributes$autoplay(true),
+					elm$html$Html$Attributes$width(model.config.size.width),
+					elm$html$Html$Attributes$height(model.config.size.height)
+				]),
+			_List_Nil),
+			A2(
+			elm$html$Html$p,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$button,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('btn mx-1'),
+							elm$html$Html$Attributes$type_('button'),
+							elm$html$Html$Events$onClick(author$project$Main$OnCamera)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('On Camera')
+						])),
+					A2(
+					elm$html$Html$button,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('btn mx-1'),
+							elm$html$Html$Attributes$type_('button'),
+							elm$html$Html$Events$onClick(author$project$Main$CaptureImage)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Decode QR')
+						]))
+				])),
+			A2(
+			elm$html$Html$canvas,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$id(model.config.ids.capture),
+					elm$html$Html$Attributes$hidden(true)
+				]),
+			_List_Nil),
+			author$project$Main$viewResult(model)
+		]);
+};
+var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$Main$view = function (model) {
-	var code = A2(
-		elm$core$Maybe$withDefault,
-		'',
-		A2(
-			elm$core$Maybe$map,
-			function ($) {
-				return $.data;
-			},
-			model.qrcode));
 	return A2(
 		elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('Box col-4 mx-auto text-center mt-3')
+			]),
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$video,
+				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$id(model.config.ids.video),
-						A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
-						elm$html$Html$Attributes$autoplay(true),
-						elm$html$Html$Attributes$width(model.config.size.width),
-						elm$html$Html$Attributes$height(model.config.size.height)
+						elm$html$Html$Attributes$class('Box-header')
 					]),
-				_List_Nil),
-				A2(
-				elm$html$Html$p,
-				_List_Nil,
 				_List_fromArray(
 					[
 						A2(
-						elm$html$Html$button,
+						elm$html$Html$h1,
 						_List_fromArray(
 							[
-								elm$html$Html$Events$onClick(author$project$Main$OnCamera)
+								elm$html$Html$Attributes$class('Box-title')
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('On Camera')
-							])),
-						A2(
-						elm$html$Html$button,
-						_List_fromArray(
-							[
-								elm$html$Html$Events$onClick(author$project$Main$CaptureImage)
-							]),
-						_List_fromArray(
-							[
-								elm$html$Html$text('Capture Image')
+								elm$html$Html$text('AnaQRam Web')
 							]))
 					])),
 				A2(
-				elm$html$Html$canvas,
+				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$id(model.config.ids.capture)
+						elm$html$Html$Attributes$class('Box-Body')
 					]),
-				_List_Nil),
-				A2(
-				elm$html$Html$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text('QR Code: ' + code)
-					])),
-				A2(
-				elm$html$Html$p,
-				_List_Nil,
-				_List_fromArray(
-					[
-						elm$html$Html$text('Error: ' + model.error)
-					]))
+				author$project$Main$viewBody(model))
 			]));
 };
 var elm$browser$Browser$External = function (a) {
@@ -5229,9 +5287,6 @@ var elm$core$String$startsWith = _String_startsWith;
 var elm$url$Url$Http = {$: 'Http'};
 var elm$url$Url$Https = {$: 'Https'};
 var elm$core$String$indexes = _String_indexes;
-var elm$core$String$isEmpty = function (string) {
-	return string === '';
-};
 var elm$core$String$left = F2(
 	function (n, string) {
 		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);

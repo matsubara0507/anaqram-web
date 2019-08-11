@@ -3,7 +3,7 @@ module Main exposing (main)
 import AnaQRam.QRCode as QRCode exposing (QRCode)
 import Browser as Browser
 import Html as Html exposing (..)
-import Html.Attributes exposing (autoplay, height, id, style, width)
+import Html.Attributes exposing (autoplay, class, height, hidden, id, style, type_, width)
 import Html.Events exposing (onClick)
 import Json.Decode exposing (Error, errorToString)
 
@@ -54,29 +54,53 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    div [ class "Box col-4 mx-auto text-center mt-3" ]
+        [ div [ class "Box-header" ]
+            [ h1 [ class "Box-title" ] [ text "AnaQRam Web" ] ]
+        , div [ class "Box-Body" ] (viewBody model)
+        ]
+
+
+viewBody : Model -> List (Html Msg)
+viewBody model =
+    [ video
+        [ class "my-2"
+        , id model.config.ids.video
+        , style "background-color" "#000"
+        , autoplay True
+        , width model.config.size.width
+        , height model.config.size.height
+        ]
+        []
+    , p []
+        [ button
+            [ class "btn mx-1", type_ "button", onClick OnCamera ]
+            [ text "On Camera" ]
+        , button
+            [ class "btn mx-1", type_ "button", onClick CaptureImage ]
+            [ text "Decode QR" ]
+        ]
+    , canvas [ id model.config.ids.capture, hidden True ] []
+    , viewResult model
+    ]
+
+
+viewResult : Model -> Html Msg
+viewResult model =
     let
         code =
             model.qrcode
                 |> Maybe.map .data
                 |> Maybe.withDefault ""
+
+        attr =
+            class "mx-5 mb-2 flash text-left"
     in
-    div []
-        [ video
-            [ id model.config.ids.video
-            , style "background-color" "#000"
-            , autoplay True
-            , width model.config.size.width
-            , height model.config.size.height
-            ]
-            []
-        , p []
-            [ button [ onClick OnCamera ] [ text "On Camera" ]
-            , button [ onClick CaptureImage ] [ text "Capture Image" ]
-            ]
-        , canvas [ id model.config.ids.capture ] []
-        , p [] [ text ("QR Code: " ++ code) ]
-        , p [] [ text ("Error: " ++ model.error) ]
-        ]
+    if String.isEmpty model.error then
+        div [ attr, class "flash-success" ] [ text ("QR Code: " ++ code) ]
+
+    else
+        div [ attr, class "flash-error" ] [ text ("Error: " ++ model.error) ]
 
 
 subscriptions : Model -> Sub Msg
