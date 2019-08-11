@@ -17,16 +17,44 @@ const app = Elm.Main.init(
   }
 );
 
+const constraints = {
+  audio: false,
+  video: {...flags.size, facingMode: "environment" }
+};
+
+function handleSuccess(stream) {
+  const video = document.getElementById(flags.ids.video);
+  const videoTracks = stream.getVideoTracks();
+  console.log('Got stream with constraints:', constraints);
+  console.log(`Using video device: ${videoTracks[0].label}`);
+  window.stream = stream; // make variable available to browser console
+  video.srcObject = stream;
+}
+
+function handleError(error) {
+  if (error.name === 'ConstraintNotSatisfiedError') {
+    let v = constraints.video;
+    alert(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
+  } else if (error.name === 'PermissionDeniedError') {
+    alert('Permissions have not been granted to use your camera and ' +
+      'microphone, you need to allow the page access to your devices in ' +
+      'order for the demo to work.');
+  }
+  alert(`getUserMedia error: ${error.name}`);
+  console.error(error);
+}
+
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    handleError(e);
+  }
+}
+
 const video = document.getElementById(flags.ids.video);
-app.ports.startCamera.subscribe(function() {
-  navigator.mediaDevices.getUserMedia(
-    { video: {...flags.size, facingMode: "environment" }
-    , audio: false
-    }
-  )
-  .then(stream => video.srcObject = stream)
-  .catch(err => alert(`${err.name} ${err.message}`));
-});
+app.ports.startCamera.subscribe(function() { initCamera() });
 
 app.ports.captureImage.subscribe(function() {
   var canvas_capture_image = document.getElementById(flags.ids.capture);
