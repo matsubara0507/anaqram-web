@@ -3,7 +3,7 @@ module Main exposing (main)
 import AnaQRam.QRCode as QRCode exposing (QRCode)
 import Browser as Browser
 import Html as Html exposing (..)
-import Html.Attributes exposing (autoplay, class, height, hidden, id, style, type_, width)
+import Html.Attributes exposing (attribute, autoplay, class, height, hidden, id, style, type_, width)
 import Html.Events exposing (onClick)
 import Json.Decode exposing (Error, errorToString)
 
@@ -68,6 +68,7 @@ viewBody model =
         , id model.config.ids.video
         , style "background-color" "#000"
         , autoplay True
+        , attribute "playsinline" ""
         , width model.config.size.width
         , height model.config.size.height
         ]

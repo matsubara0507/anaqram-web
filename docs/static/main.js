@@ -4970,6 +4970,14 @@ var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$canvas = _VirtualDom_node('canvas');
 var elm$html$Html$p = _VirtualDom_node('p');
 var elm$html$Html$video = _VirtualDom_node('video');
+var elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var elm$html$Html$Attributes$attribute = elm$virtual_dom$VirtualDom$attribute;
 var elm$json$Json$Encode$bool = _Json_wrap;
 var elm$html$Html$Attributes$boolProperty = F2(
 	function (key, bool) {
@@ -5024,6 +5032,7 @@ var author$project$Main$viewBody = function (model) {
 					elm$html$Html$Attributes$id(model.config.ids.video),
 					A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
 					elm$html$Html$Attributes$autoplay(true),
+					A2(elm$html$Html$Attributes$attribute, 'playsinline', ''),
 					elm$html$Html$Attributes$width(model.config.size.width),
 					elm$html$Html$Attributes$height(model.config.size.height)
 				]),
