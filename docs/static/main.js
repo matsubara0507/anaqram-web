@@ -5075,7 +5075,7 @@ var author$project$Main$view = function (model) {
 		elm$html$Html$div,
 		_List_fromArray(
 			[
-				elm$html$Html$Attributes$class('Box col-4 mx-auto text-center mt-3')
+				elm$html$Html$Attributes$class('Box text-center mt-3 container-sm')
 			]),
 		_List_fromArray(
 			[

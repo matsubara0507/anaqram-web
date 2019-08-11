@@ -8,7 +8,7 @@ if (typeof navigator.mediaDevices.getUserMedia !== 'function') {
 
 const flags = {
   ids: { video: 'video_area', capture: 'capture_image' },
-  size: { width: 400, height: 300 }
+  size: { width: 300, height: 300 }
 };
 
 const app = Elm.Main.init(

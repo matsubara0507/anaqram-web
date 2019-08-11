@@ -54,7 +54,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "Box col-4 mx-auto text-center mt-3" ]
+    div [ class "Box text-center mt-3 container-sm" ]
         [ div [ class "Box-header" ]
             [ h1 [ class "Box-title" ] [ text "AnaQRam Web" ] ]
         , div [ class "Box-Body" ] (viewBody model)
