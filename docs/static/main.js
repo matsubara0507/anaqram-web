@@ -4874,7 +4874,7 @@ var author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{qrcode: qrcode}),
+								{error: '', qrcode: qrcode}),
 							elm$core$Platform$Cmd$none);
 					}
 				} else {

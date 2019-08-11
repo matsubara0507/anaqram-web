@@ -49,7 +49,7 @@ update msg model =
             ( { model | error = "QR code is not found." }, Cmd.none )
 
         UpdateQRCode (Ok qrcode) ->
-            ( { model | qrcode = qrcode }, Cmd.none )
+            ( { model | qrcode = qrcode, error = "" }, Cmd.none )
 
         UpdateQRCode (Err message) ->
             ( { model | error = errorToString message }, Cmd.none )
