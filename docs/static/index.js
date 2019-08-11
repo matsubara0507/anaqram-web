@@ -34,14 +34,21 @@ function handleSuccess(stream) {
 function handleError(error) {
   if (error.name === 'ConstraintNotSatisfiedError') {
     let v = constraints.video;
-    alert(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
+    errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
   } else if (error.name === 'PermissionDeniedError') {
-    alert('Permissions have not been granted to use your camera and ' +
+    errorMsg('Permissions have not been granted to use your camera and ' +
       'microphone, you need to allow the page access to your devices in ' +
       'order for the demo to work.');
   }
-  alert(`getUserMedia error: ${error.name}`);
-  console.error(error);
+  errorMsg(`getUserMedia error: ${error.name}`, error);
+}
+
+function errorMsg(msg, error) {
+  const errorElement = document.getElementById('main');
+  errorElement.innerHTML += `<div class="flash flash-error">${msg}</siv>`;
+  if (typeof error !== 'undefined') {
+    console.error(error);
+  }
 }
 
 async function initCamera() {

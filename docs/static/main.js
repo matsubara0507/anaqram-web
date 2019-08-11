@@ -4862,12 +4862,21 @@ var author$project$Main$update = F2(
 					author$project$AnaQRam$QRCode$captureImage(_Utils_Tuple0));
 			default:
 				if (msg.a.$ === 'Ok') {
-					var qrcode = msg.a.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{qrcode: qrcode}),
-						elm$core$Platform$Cmd$none);
+					if (msg.a.a.$ === 'Nothing') {
+						var _n1 = msg.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{error: 'QR code is not found.'}),
+							elm$core$Platform$Cmd$none);
+					} else {
+						var qrcode = msg.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{qrcode: qrcode}),
+							elm$core$Platform$Cmd$none);
+					}
 				} else {
 					var message = msg.a.a;
 					return _Utils_Tuple2(
@@ -5021,99 +5030,64 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Main$viewBody = function (model) {
-	return _List_fromArray(
-		[
-			A2(
-			elm$html$Html$video,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$class('my-2'),
-					elm$html$Html$Attributes$id(model.config.ids.video),
-					A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
-					elm$html$Html$Attributes$autoplay(true),
-					A2(elm$html$Html$Attributes$attribute, 'playsinline', ''),
-					elm$html$Html$Attributes$width(model.config.size.width),
-					elm$html$Html$Attributes$height(model.config.size.height)
-				]),
-			_List_Nil),
-			A2(
-			elm$html$Html$p,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					elm$html$Html$button,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('btn mx-1'),
-							elm$html$Html$Attributes$type_('button'),
-							elm$html$Html$Events$onClick(author$project$Main$OnCamera)
-						]),
-					_List_fromArray(
-						[
-							elm$html$Html$text('On Camera')
-						])),
-					A2(
-					elm$html$Html$button,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('btn mx-1'),
-							elm$html$Html$Attributes$type_('button'),
-							elm$html$Html$Events$onClick(author$project$Main$CaptureImage)
-						]),
-					_List_fromArray(
-						[
-							elm$html$Html$text('Decode QR')
-						]))
-				])),
-			A2(
-			elm$html$Html$canvas,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$id(model.config.ids.capture),
-					elm$html$Html$Attributes$hidden(true)
-				]),
-			_List_Nil),
-			author$project$Main$viewResult(model)
-		]);
-};
-var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$Main$view = function (model) {
 	return A2(
 		elm$html$Html$div,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('Box text-center mt-3 container-sm')
-			]),
+		_List_Nil,
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$div,
+				elm$html$Html$video,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('Box-header')
+						elm$html$Html$Attributes$class('my-2'),
+						elm$html$Html$Attributes$id(model.config.ids.video),
+						A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
+						elm$html$Html$Attributes$autoplay(true),
+						A2(elm$html$Html$Attributes$attribute, 'playsinline', ''),
+						elm$html$Html$Attributes$width(model.config.size.width),
+						elm$html$Html$Attributes$height(model.config.size.height)
 					]),
+				_List_Nil),
+				A2(
+				elm$html$Html$p,
+				_List_Nil,
 				_List_fromArray(
 					[
 						A2(
-						elm$html$Html$h1,
+						elm$html$Html$button,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('Box-title')
+								elm$html$Html$Attributes$class('btn mx-1'),
+								elm$html$Html$Attributes$type_('button'),
+								elm$html$Html$Events$onClick(author$project$Main$OnCamera)
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('AnaQRam Web')
+								elm$html$Html$text('On Camera')
+							])),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('btn mx-1'),
+								elm$html$Html$Attributes$type_('button'),
+								elm$html$Html$Events$onClick(author$project$Main$CaptureImage)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('Decode QR')
 							]))
 					])),
 				A2(
-				elm$html$Html$div,
+				elm$html$Html$canvas,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('Box-Body')
+						elm$html$Html$Attributes$id(model.config.ids.capture),
+						elm$html$Html$Attributes$hidden(true)
 					]),
-				author$project$Main$viewBody(model))
+				_List_Nil),
+				author$project$Main$viewResult(model)
 			]));
 };
 var elm$browser$Browser$External = function (a) {

@@ -45,6 +45,9 @@ update msg model =
         CaptureImage ->
             ( model, QRCode.captureImage () )
 
+        UpdateQRCode (Ok Nothing) ->
+            ( { model | error = "QR code is not found." }, Cmd.none )
+
         UpdateQRCode (Ok qrcode) ->
             ( { model | qrcode = qrcode }, Cmd.none )
 
@@ -54,36 +57,28 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "Box text-center mt-3 container-sm" ]
-        [ div [ class "Box-header" ]
-            [ h1 [ class "Box-title" ] [ text "AnaQRam Web" ] ]
-        , div [ class "Box-Body" ] (viewBody model)
+    div []
+        [ video
+            [ class "my-2"
+            , id model.config.ids.video
+            , style "background-color" "#000"
+            , autoplay True
+            , attribute "playsinline" ""
+            , width model.config.size.width
+            , height model.config.size.height
+            ]
+            []
+        , p []
+            [ button
+                [ class "btn mx-1", type_ "button", onClick OnCamera ]
+                [ text "On Camera" ]
+            , button
+                [ class "btn mx-1", type_ "button", onClick CaptureImage ]
+                [ text "Decode QR" ]
+            ]
+        , canvas [ id model.config.ids.capture, hidden True ] []
+        , viewResult model
         ]
-
-
-viewBody : Model -> List (Html Msg)
-viewBody model =
-    [ video
-        [ class "my-2"
-        , id model.config.ids.video
-        , style "background-color" "#000"
-        , autoplay True
-        , attribute "playsinline" ""
-        , width model.config.size.width
-        , height model.config.size.height
-        ]
-        []
-    , p []
-        [ button
-            [ class "btn mx-1", type_ "button", onClick OnCamera ]
-            [ text "On Camera" ]
-        , button
-            [ class "btn mx-1", type_ "button", onClick CaptureImage ]
-            [ text "Decode QR" ]
-        ]
-    , canvas [ id model.config.ids.capture, hidden True ] []
-    , viewResult model
-    ]
 
 
 viewResult : Model -> Html Msg
