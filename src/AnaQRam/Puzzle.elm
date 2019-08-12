@@ -1,8 +1,10 @@
-module AnaQRam.Puzzle exposing (Piece, Puzzle, display, empty, getPiece, init, map, pieceToString, shuffle, success, swapPiece)
+module AnaQRam.Puzzle exposing (Piece, Puzzle, display, dummy, empty, getPiece, init, map, pieceToString, problem, problems, shuffle, size, success, swapPiece)
 
 import Array exposing (Array)
+import Dict exposing (Dict)
 import Random
 import Random.Array as Array
+import Random.List as List
 
 
 type alias Puzzle =
@@ -31,6 +33,11 @@ shuffle toMsg puzzle =
 empty : Puzzle
 empty =
     Array.empty
+
+
+size : Puzzle -> Int
+size =
+    Array.length
 
 
 display : Int -> Puzzle -> Puzzle
@@ -93,3 +100,51 @@ swapPiece idxA idxB puzzle =
 
         _ ->
             puzzle
+
+
+problems : Dict Int (List String)
+problems =
+    let
+        append v acc =
+            Maybe.map ((::) v) acc
+                |> Maybe.withDefault [ v ]
+                |> Just
+
+        update word =
+            Dict.update (String.length word) (append word)
+    in
+    [ "りんご"
+    , "ゴリラ"
+    , "ラッパ"
+    , "パンダ"
+    , "スイス"
+    , "スライド"
+    , "トンネル"
+    , "アップル"
+    , "オレンジ"
+    , "パソコン"
+    , "ハリネズミ"
+    , "とうきょう"
+    , "エベレスト"
+    , "ランドセル"
+    , "カブトムシ"
+    , "カルボナーラ"
+    , "オリンピック"
+    , "スマートホン"
+    , "しんかんせん"
+    , "やまのてせん"
+    ]
+        |> List.foldl update Dict.empty
+
+
+problem : (String -> msg) -> Int -> Cmd msg
+problem toMsg wordSize =
+    Dict.get wordSize problems
+        |> Maybe.withDefault []
+        |> List.shuffle
+        |> Random.generate (toMsg << Maybe.withDefault "" << List.head)
+
+
+dummy : Int -> Puzzle
+dummy wordSize =
+    init (String.padRight wordSize '？' "")

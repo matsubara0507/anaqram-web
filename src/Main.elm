@@ -3,9 +3,10 @@ module Main exposing (main)
 import AnaQRam.Puzzle as Puzzle exposing (Piece, Puzzle)
 import AnaQRam.QRCode as QRCode exposing (QRCode)
 import Browser as Browser
+import Dict
 import Html as Html exposing (..)
-import Html.Attributes exposing (attribute, autoplay, class, height, hidden, id, style, type_, width)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (attribute, autoplay, class, height, hidden, id, style, type_, value, width)
+import Html.Events exposing (onClick, onInput)
 import Json.Decode exposing (Error, errorToString)
 
 
@@ -26,6 +27,7 @@ type alias Model =
     , answer : String
     , puzzle : Puzzle
     , click : Maybe Int
+    , start : Bool
     }
 
 
@@ -35,42 +37,63 @@ init config =
         answer =
             "あなくらむ！"
     in
-    ( Model config Nothing "" answer Puzzle.empty Nothing
-    , Puzzle.shuffle ShufflePuzzle (Puzzle.init answer)
+    ( Model config Nothing "" answer Puzzle.empty Nothing False
+    , Cmd.none
     )
 
 
 type Msg
-    = OnCamera
+    = StartGame
+    | ChoiceAnswer String
+    | ShufflePuzzle Puzzle
     | CaptureImage
     | UpdateQRCode (Result Error (Maybe QRCode))
-    | ShufflePuzzle Puzzle
+    | ChoiceWordSize Int
     | ClickPiece Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        OnCamera ->
-            ( model, QRCode.startCamera () )
+    case ( model.start, msg ) of
+        ( False, StartGame ) ->
+            ( { model | start = True }
+            , Cmd.batch
+                [ QRCode.startCamera ()
+                , Puzzle.problem ChoiceAnswer (Puzzle.size model.puzzle)
+                ]
+            )
 
-        CaptureImage ->
-            ( model, QRCode.captureImage () )
+        ( True, ChoiceAnswer answer ) ->
+            ( { model | answer = answer }
+            , Puzzle.shuffle ShufflePuzzle (Puzzle.init answer)
+            )
 
-        UpdateQRCode (Ok Nothing) ->
-            ( { model | error = "QR code is not found." }, Cmd.none )
-
-        UpdateQRCode (Ok (Just qrcode)) ->
-            updatePuzzle qrcode model
-
-        UpdateQRCode (Err message) ->
-            ( { model | error = errorToString message }, Cmd.none )
-
-        ShufflePuzzle puzzle ->
+        ( True, ShufflePuzzle puzzle ) ->
             ( { model | puzzle = puzzle }, Cmd.none )
 
-        ClickPiece idx ->
+        ( True, CaptureImage ) ->
+            ( model, QRCode.captureImage () )
+
+        ( True, UpdateQRCode (Ok Nothing) ) ->
+            ( { model | error = "QR code is not found." }, Cmd.none )
+
+        ( True, UpdateQRCode (Ok (Just qrcode)) ) ->
+            updatePuzzle qrcode model
+
+        ( _, UpdateQRCode (Err message) ) ->
+            ( { model | error = errorToString message }, Cmd.none )
+
+        ( _, ChoiceWordSize 0 ) ->
+            ( model, Cmd.none )
+
+        ( False, ChoiceWordSize wordSize ) ->
+            ( { model | puzzle = Puzzle.dummy wordSize }, Cmd.none )
+
+        ( True, ClickPiece idx ) ->
             updatePiece idx model
+
+        _ ->
+            ( model, Cmd.none )
 
 
 updatePuzzle : QRCode -> Model -> ( Model, Cmd Msg )
@@ -115,9 +138,10 @@ view model =
             ]
             []
         , p []
-            [ button
-                [ class "btn mx-1", type_ "button", onClick OnCamera ]
-                [ text "On Camera" ]
+            [ viewSelectMenu model
+            , button
+                [ class "btn mx-1", type_ "button", onClick StartGame ]
+                [ text "Game Start" ]
             , button
                 [ class "btn mx-1", type_ "button", onClick CaptureImage ]
                 [ text "Decode QR" ]
@@ -126,6 +150,19 @@ view model =
         , viewPuzzle model
         , viewResult model
         ]
+
+
+viewSelectMenu : Model -> Html Msg
+viewSelectMenu model =
+    let
+        viewItem v =
+            option [ value (String.fromInt v) ] [ text (String.fromInt v) ]
+    in
+    select
+        [ class "form-select mx-1"
+        , onInput (ChoiceWordSize << Maybe.withDefault 0 << String.toInt)
+        ]
+        (option [] [ text "Choose Word Size" ] :: List.map viewItem (Dict.keys Puzzle.problems))
 
 
 viewResult : Model -> Html Msg
