@@ -1,4 +1,4 @@
-module AnaQRam.Puzzle exposing (Piece, Puzzle, display, dummy, empty, getPiece, init, map, pieceToString, problem, problems, shuffle, size, success, swapPiece)
+module AnaQRam.Puzzle exposing (Piece, Puzzle, display, dummy, empty, getPiece, init, map, pieceToString, problem, problems, shuffle, size, start, success, swapPiece)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -8,7 +8,10 @@ import Random.List as List
 
 
 type alias Puzzle =
-    Array Piece
+    { pieces : Array Piece
+    , answer : String
+    , start : Bool
+    }
 
 
 type alias Piece =
@@ -18,35 +21,49 @@ type alias Piece =
     }
 
 
-init : String -> Puzzle
-init answer =
-    String.toList answer
-        |> Array.fromList
-        |> Array.indexedMap (Piece True)
+init : String -> Puzzle -> Puzzle
+init answer puzzle =
+    let
+        pieces =
+            String.toList answer
+                |> Array.fromList
+                |> Array.indexedMap (Piece True)
+    in
+    { puzzle | pieces = pieces, answer = answer }
+
+
+start : Puzzle -> Puzzle
+start puzzle =
+    { puzzle | start = True }
 
 
 shuffle : (Puzzle -> msg) -> Puzzle -> Cmd msg
 shuffle toMsg puzzle =
-    Random.generate toMsg (Array.shuffle puzzle)
+    Random.generate
+        (\updated -> toMsg { puzzle | pieces = updated })
+        (Array.shuffle puzzle.pieces)
 
 
 empty : Puzzle
 empty =
-    Array.empty
+    Puzzle Array.empty "" False
 
 
 size : Puzzle -> Int
 size =
-    Array.length
+    Array.length << .pieces
 
 
 display : Int -> Puzzle -> Puzzle
 display idx puzzle =
     let
         pIdx =
-            modBy (Array.length puzzle) idx
+            modBy (size puzzle) idx
+
+        updated =
+            Array.map (displayPiece pIdx) puzzle.pieces
     in
-    Array.map (displayPiece pIdx) puzzle
+    { puzzle | pieces = updated }
 
 
 displayPiece : Int -> Piece -> Piece
@@ -58,17 +75,24 @@ displayPiece idx piece =
         piece
 
 
-success : String -> Puzzle -> Bool
-success answer puzzle =
-    Array.map .char puzzle
-        |> Array.toList
-        |> String.fromList
-        |> (==) answer
+success : Puzzle -> Bool
+success puzzle =
+    case puzzle.answer of
+        "" ->
+            False
+
+        _ ->
+            Array.map pieceToString puzzle.pieces
+                |> Array.toList
+                |> String.concat
+                |> (==) puzzle.answer
 
 
 map : (Int -> Piece -> a) -> Puzzle -> List a
 map f puzzle =
-    Array.toList (Array.indexedMap f puzzle)
+    puzzle.pieces
+        |> Array.indexedMap f
+        |> Array.toList
 
 
 pieceToString : Piece -> String
@@ -84,19 +108,23 @@ getPiece : Int -> Puzzle -> Maybe Piece
 getPiece idx puzzle =
     let
         pIdx =
-            modBy (Array.length puzzle) idx
+            modBy (size puzzle) idx
     in
-    Array.filter (\p -> p.index == pIdx) puzzle
+    Array.filter (\p -> p.index == pIdx) puzzle.pieces
         |> Array.get 0
 
 
 swapPiece : Int -> Int -> Puzzle -> Puzzle
 swapPiece idxA idxB puzzle =
-    case ( Array.get idxA puzzle, Array.get idxB puzzle ) of
+    case ( Array.get idxA puzzle.pieces, Array.get idxB puzzle.pieces ) of
         ( Just pieceA, Just pieceB ) ->
-            puzzle
-                |> Array.set idxB pieceA
-                |> Array.set idxA pieceB
+            let
+                updated =
+                    puzzle.pieces
+                        |> Array.set idxB pieceA
+                        |> Array.set idxA pieceB
+            in
+            { puzzle | pieces = updated }
 
         _ ->
             puzzle
@@ -133,6 +161,7 @@ problems =
     , "スマートホン"
     , "しんかんせん"
     , "やまのてせん"
+    , "あなくらむ！"
     ]
         |> List.foldl update Dict.empty
 
@@ -147,4 +176,4 @@ problem toMsg wordSize =
 
 dummy : Int -> Puzzle
 dummy wordSize =
-    init (String.padRight wordSize '？' "")
+    init (String.padRight wordSize ' ' "") empty

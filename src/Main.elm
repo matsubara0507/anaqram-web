@@ -24,20 +24,14 @@ type alias Model =
     { config : QRCode.Config
     , qrcode : Maybe QRCode
     , error : String
-    , answer : String
     , puzzle : Puzzle
     , click : Maybe Int
-    , start : Bool
     }
 
 
 init : QRCode.Config -> ( Model, Cmd Msg )
 init config =
-    let
-        answer =
-            "あなくらむ！"
-    in
-    ( Model config Nothing "" answer Puzzle.empty Nothing False
+    ( Model config Nothing "" Puzzle.empty Nothing
     , Cmd.none
     )
 
@@ -54,9 +48,9 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( model.start, msg ) of
+    case ( model.puzzle.start, msg ) of
         ( False, StartGame ) ->
-            ( { model | start = True }
+            ( { model | puzzle = Puzzle.start model.puzzle }
             , Cmd.batch
                 [ QRCode.startCamera ()
                 , Puzzle.problem ChoiceAnswer (Puzzle.size model.puzzle)
@@ -64,9 +58,7 @@ update msg model =
             )
 
         ( True, ChoiceAnswer answer ) ->
-            ( { model | answer = answer }
-            , Puzzle.shuffle ShufflePuzzle (Puzzle.init answer)
-            )
+            ( model, Puzzle.shuffle ShufflePuzzle (Puzzle.init answer model.puzzle) )
 
         ( True, ShufflePuzzle puzzle ) ->
             ( { model | puzzle = puzzle }, Cmd.none )
@@ -177,7 +169,7 @@ viewResult model =
         attr =
             class "mx-5 mb-2 text-left"
     in
-    case ( Puzzle.success model.answer model.puzzle, model.error, scaned ) of
+    case ( Puzzle.success model.puzzle, model.error, scaned ) of
         ( True, _, _ ) ->
             div [ attr, class "flash" ] [ text "Success!!" ]
 

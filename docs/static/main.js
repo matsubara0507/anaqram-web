@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.R.B === region.X.B)
+	if (region.ao.C === region.X.C)
 	{
-		return 'on line ' + region.R.B;
+		return 'on line ' + region.ao.C;
 	}
-	return 'on lines ' + region.R.B + ' through ' + region.X.B;
+	return 'on lines ' + region.ao.C + ' through ' + region.X.C;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aM,
-		impl.aK,
+		impl.aE,
+		impl.aN,
+		impl.aL,
 		function() { return function() {} }
 	);
 });
@@ -2742,8 +2742,8 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		l: func(record.l),
-		S: record.S,
+		m: func(record.m),
+		R: record.R,
 		Q: record.Q
 	}
 });
@@ -3012,8 +3012,8 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.l;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.S;
+		var message = !tag ? value : tag < 3 ? value.a : value.m;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.R;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
 			(tag == 2 ? value.b : tag == 3 && value.Q) && event.preventDefault(),
@@ -3966,11 +3966,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aM,
-		impl.aK,
+		impl.aE,
+		impl.aN,
+		impl.aL,
 		function(sendToApp, initialModel) {
-			var view = impl.aO;
+			var view = impl.aP;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -4002,12 +4002,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aM,
-		impl.aK,
+		impl.aE,
+		impl.aN,
+		impl.aL,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.C && impl.C(sendToApp)
-			var view = impl.aO;
+			var divertHrefToApp = impl.D && impl.D(sendToApp)
+			var view = impl.aP;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4015,12 +4015,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.av);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aw);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aL) && (_VirtualDom_doc.title = title = doc.aL);
+				(title !== doc.aM) && (_VirtualDom_doc.title = title = doc.aM);
 			});
 		}
 	);
@@ -4076,12 +4076,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aF;
-	var onUrlRequest = impl.aG;
+	var onUrlChange = impl.aG;
+	var onUrlRequest = impl.aH;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		C: function(sendToApp)
+		D: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4107,13 +4107,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aD: function(flags)
+		aE: function(flags)
 		{
-			return A3(impl.aD, flags, _Browser_getUrl(), key);
+			return A3(impl.aE, flags, _Browser_getUrl(), key);
 		},
-		aO: impl.aO,
-		aM: impl.aM,
-		aK: impl.aK
+		aP: impl.aP,
+		aN: impl.aN,
+		aL: impl.aL
 	});
 }
 
@@ -4179,17 +4179,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { M: 'hidden', aw: 'visibilitychange' }
+		? { M: 'hidden', ax: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { M: 'mozHidden', aw: 'mozvisibilitychange' }
+		? { M: 'mozHidden', ax: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { M: 'msHidden', aw: 'msvisibilitychange' }
+		? { M: 'msHidden', ax: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { M: 'webkitHidden', aw: 'webkitvisibilitychange' }
-		: { M: 'hidden', aw: 'visibilitychange' };
+		? { M: 'webkitHidden', ax: 'webkitvisibilitychange' }
+		: { M: 'hidden', ax: 'visibilitychange' };
 }
 
 
@@ -4271,10 +4271,10 @@ function _Browser_getViewport()
 {
 	return {
 		an: _Browser_getScene(),
-		ar: {
-			I: _Browser_window.pageXOffset,
-			J: _Browser_window.pageYOffset,
-			as: _Browser_doc.documentElement.clientWidth,
+		as: {
+			K: _Browser_window.pageXOffset,
+			L: _Browser_window.pageYOffset,
+			at: _Browser_doc.documentElement.clientWidth,
 			_: _Browser_doc.documentElement.clientHeight
 		}
 	};
@@ -4285,7 +4285,7 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		as: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		at: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
 		_: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
@@ -4310,13 +4310,13 @@ function _Browser_getViewportOf(id)
 	{
 		return {
 			an: {
-				as: node.scrollWidth,
+				at: node.scrollWidth,
 				_: node.scrollHeight
 			},
-			ar: {
-				I: node.scrollLeft,
-				J: node.scrollTop,
-				as: node.clientWidth,
+			as: {
+				K: node.scrollLeft,
+				L: node.scrollTop,
+				at: node.clientWidth,
 				_: node.clientHeight
 			}
 		};
@@ -4348,16 +4348,16 @@ function _Browser_getElement(id)
 		var y = _Browser_window.pageYOffset;
 		return {
 			an: _Browser_getScene(),
-			ar: {
-				I: x,
-				J: y,
-				as: _Browser_doc.documentElement.clientWidth,
+			as: {
+				K: x,
+				L: y,
+				at: _Browser_doc.documentElement.clientWidth,
 				_: _Browser_doc.documentElement.clientHeight
 			},
-			ay: {
-				I: x + rect.left,
-				J: y + rect.top,
-				as: rect.width,
+			az: {
+				K: x + rect.left,
+				L: y + rect.top,
+				at: rect.width,
 				_: rect.height
 			}
 		};
@@ -4393,6 +4393,10 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$AnaQRam$Puzzle$Puzzle = F3(
+	function (pieces, answer, start) {
+		return {I: answer, f: pieces, ao: start};
+	});
 var elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
 		return {$: 0, a: a, b: b, c: c, d: d};
@@ -4489,12 +4493,12 @@ var elm$core$Array$shiftStep = elm$core$Basics$ceiling(
 	A2(elm$core$Basics$logBase, 2, elm$core$Array$branchFactor));
 var elm$core$Elm$JsArray$empty = _JsArray_empty;
 var elm$core$Array$empty = A4(elm$core$Array$Array_elm_builtin, 0, elm$core$Array$shiftStep, elm$core$Elm$JsArray$empty, elm$core$Elm$JsArray$empty);
-var author$project$AnaQRam$Puzzle$empty = elm$core$Array$empty;
-var author$project$Main$Model = F7(
-	function (config, qrcode, error, answer, puzzle, click, start) {
-		return {K: answer, z: click, A: config, o: error, g: puzzle, H: qrcode, R: start};
-	});
 var elm$core$Basics$False = 1;
+var author$project$AnaQRam$Puzzle$empty = A3(author$project$AnaQRam$Puzzle$Puzzle, elm$core$Array$empty, '', false);
+var author$project$Main$Model = F5(
+	function (config, qrcode, error, puzzle, click) {
+		return {A: click, B: config, p: error, e: puzzle, J: qrcode};
+	});
 var elm$core$Maybe$Nothing = {$: 1};
 var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
@@ -4876,13 +4880,12 @@ var elm$json$Json$Decode$errorToStringHelp = F2(
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$init = function (config) {
-	var answer = 'あなくらむ！';
 	return _Utils_Tuple2(
-		A7(author$project$Main$Model, config, elm$core$Maybe$Nothing, '', answer, author$project$AnaQRam$Puzzle$empty, elm$core$Maybe$Nothing, false),
+		A5(author$project$Main$Model, config, elm$core$Maybe$Nothing, '', author$project$AnaQRam$Puzzle$empty, elm$core$Maybe$Nothing),
 		elm$core$Platform$Cmd$none);
 };
 var author$project$AnaQRam$QRCode$QRCode = function (data) {
-	return {ax: data};
+	return {ay: data};
 };
 var elm$json$Json$Decode$field = _Json_decodeField;
 var elm$json$Json$Decode$map = _Json_map1;
@@ -4925,7 +4928,7 @@ var author$project$Main$subscriptions = function (_n0) {
 };
 var author$project$AnaQRam$Puzzle$Piece = F3(
 	function (hidden, index, _char) {
-		return {L: _char, M: hidden, N: index};
+		return {V: _char, M: hidden, N: index};
 	});
 var elm$core$Array$fromListHelp = F3(
 	function (list, nodeList, nodeListSize) {
@@ -5009,13 +5012,17 @@ var elm$core$String$foldr = _String_foldr;
 var elm$core$String$toList = function (string) {
 	return A3(elm$core$String$foldr, elm$core$List$cons, _List_Nil, string);
 };
-var author$project$AnaQRam$Puzzle$init = function (answer) {
-	return A2(
-		elm$core$Array$indexedMap,
-		author$project$AnaQRam$Puzzle$Piece(true),
-		elm$core$Array$fromList(
-			elm$core$String$toList(answer)));
-};
+var author$project$AnaQRam$Puzzle$init = F2(
+	function (answer, puzzle) {
+		var pieces = A2(
+			elm$core$Array$indexedMap,
+			author$project$AnaQRam$Puzzle$Piece(true),
+			elm$core$Array$fromList(
+				elm$core$String$toList(answer)));
+		return _Utils_update(
+			puzzle,
+			{I: answer, f: pieces});
+	});
 var elm$core$String$cons = _String_cons;
 var elm$core$String$fromChar = function (_char) {
 	return A2(elm$core$String$cons, _char, '');
@@ -5045,8 +5052,10 @@ var elm$core$String$padRight = F3(
 				elm$core$String$fromChar(_char)));
 	});
 var author$project$AnaQRam$Puzzle$dummy = function (wordSize) {
-	return author$project$AnaQRam$Puzzle$init(
-		A3(elm$core$String$padRight, wordSize, '？', ''));
+	return A2(
+		author$project$AnaQRam$Puzzle$init,
+		A3(elm$core$String$padRight, wordSize, ' ', ''),
+		author$project$AnaQRam$Puzzle$empty);
 };
 var elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var elm$core$Dict$empty = elm$core$Dict$RBEmpty_elm_builtin;
@@ -5606,7 +5615,7 @@ var author$project$AnaQRam$Puzzle$problems = function () {
 		update,
 		elm$core$Dict$empty,
 		_List_fromArray(
-			['りんご', 'ゴリラ', 'ラッパ', 'パンダ', 'スイス', 'スライド', 'トンネル', 'アップル', 'オレンジ', 'パソコン', 'ハリネズミ', 'とうきょう', 'エベレスト', 'ランドセル', 'カブトムシ', 'カルボナーラ', 'オリンピック', 'スマートホン', 'しんかんせん', 'やまのてせん']));
+			['りんご', 'ゴリラ', 'ラッパ', 'パンダ', 'スイス', 'スライド', 'トンネル', 'アップル', 'オレンジ', 'パソコン', 'ハリネズミ', 'とうきょう', 'エベレスト', 'ランドセル', 'カブトムシ', 'カルボナーラ', 'オリンピック', 'スマートホン', 'しんかんせん', 'やまのてせん', 'あなくらむ！']));
 }();
 var elm$core$List$head = function (list) {
 	if (list.b) {
@@ -6039,10 +6048,25 @@ var author$project$AnaQRam$Puzzle$shuffle = F2(
 	function (toMsg, puzzle) {
 		return A2(
 			elm$random$Random$generate,
-			toMsg,
-			elm_community$random_extra$Random$Array$shuffle(puzzle));
+			function (updated) {
+				return toMsg(
+					_Utils_update(
+						puzzle,
+						{f: updated}));
+			},
+			elm_community$random_extra$Random$Array$shuffle(puzzle.f));
 	});
-var author$project$AnaQRam$Puzzle$size = elm$core$Array$length;
+var author$project$AnaQRam$Puzzle$size = A2(
+	elm$core$Basics$composeL,
+	elm$core$Array$length,
+	function ($) {
+		return $.f;
+	});
+var author$project$AnaQRam$Puzzle$start = function (puzzle) {
+	return _Utils_update(
+		puzzle,
+		{ao: true});
+};
 var elm$json$Json$Encode$null = _Json_encodeNull;
 var author$project$AnaQRam$QRCode$captureImage = _Platform_outgoingPort(
 	'captureImage',
@@ -6106,38 +6130,41 @@ var elm$core$Array$set = F3(
 var author$project$AnaQRam$Puzzle$swapPiece = F3(
 	function (idxA, idxB, puzzle) {
 		var _n0 = _Utils_Tuple2(
-			A2(elm$core$Array$get, idxA, puzzle),
-			A2(elm$core$Array$get, idxB, puzzle));
+			A2(elm$core$Array$get, idxA, puzzle.f),
+			A2(elm$core$Array$get, idxB, puzzle.f));
 		if ((!_n0.a.$) && (!_n0.b.$)) {
 			var pieceA = _n0.a.a;
 			var pieceB = _n0.b.a;
-			return A3(
+			var updated = A3(
 				elm$core$Array$set,
 				idxA,
 				pieceB,
-				A3(elm$core$Array$set, idxB, pieceA, puzzle));
+				A3(elm$core$Array$set, idxB, pieceA, puzzle.f));
+			return _Utils_update(
+				puzzle,
+				{f: updated});
 		} else {
 			return puzzle;
 		}
 	});
 var author$project$Main$updatePiece = F2(
 	function (idx, model) {
-		var _n0 = model.z;
+		var _n0 = model.A;
 		if (_n0.$ === 1) {
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{
-						z: elm$core$Maybe$Just(idx)
+						A: elm$core$Maybe$Just(idx)
 					}),
 				elm$core$Platform$Cmd$none);
 		} else {
 			var oldIdx = _n0.a;
-			var updated = A3(author$project$AnaQRam$Puzzle$swapPiece, idx, oldIdx, model.g);
+			var updated = A3(author$project$AnaQRam$Puzzle$swapPiece, idx, oldIdx, model.e);
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{z: elm$core$Maybe$Nothing, g: updated}),
+					{A: elm$core$Maybe$Nothing, e: updated}),
 				elm$core$Platform$Cmd$none);
 		}
 	});
@@ -6176,43 +6203,46 @@ var author$project$AnaQRam$Puzzle$display = F2(
 	function (idx, puzzle) {
 		var pIdx = A2(
 			elm$core$Basics$modBy,
-			elm$core$Array$length(puzzle),
+			author$project$AnaQRam$Puzzle$size(puzzle),
 			idx);
-		return A2(
+		var updated = A2(
 			elm$core$Array$map,
 			author$project$AnaQRam$Puzzle$displayPiece(pIdx),
-			puzzle);
+			puzzle.f);
+		return _Utils_update(
+			puzzle,
+			{f: updated});
 	});
 var elm$core$String$toInt = _String_toInt;
 var author$project$Main$updatePuzzle = F2(
 	function (qrcode, model) {
-		var _n0 = elm$core$String$toInt(qrcode.ax);
+		var _n0 = elm$core$String$toInt(qrcode.ay);
 		if (_n0.$ === 1) {
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{
-						o: '',
-						H: elm$core$Maybe$Just(qrcode)
+						p: '',
+						J: elm$core$Maybe$Just(qrcode)
 					}),
 				elm$core$Platform$Cmd$none);
 		} else {
 			var pIdx = _n0.a;
-			var updated = A2(author$project$AnaQRam$Puzzle$display, pIdx, model.g);
+			var updated = A2(author$project$AnaQRam$Puzzle$display, pIdx, model.e);
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{
-						o: '',
-						g: updated,
-						H: elm$core$Maybe$Just(qrcode)
+						p: '',
+						e: updated,
+						J: elm$core$Maybe$Just(qrcode)
 					}),
 				elm$core$Platform$Cmd$none);
 		}
 	});
 var author$project$Main$update = F2(
 	function (msg, model) {
-		var _n0 = _Utils_Tuple2(model.R, msg);
+		var _n0 = _Utils_Tuple2(model.e.ao, msg);
 		_n0$10:
 		while (true) {
 			switch (_n0.b.$) {
@@ -6222,7 +6252,9 @@ var author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{R: true}),
+								{
+									e: author$project$AnaQRam$Puzzle$start(model.e)
+								}),
 							elm$core$Platform$Cmd$batch(
 								_List_fromArray(
 									[
@@ -6230,7 +6262,7 @@ var author$project$Main$update = F2(
 										A2(
 										author$project$AnaQRam$Puzzle$problem,
 										author$project$Main$ChoiceAnswer,
-										author$project$AnaQRam$Puzzle$size(model.g))
+										author$project$AnaQRam$Puzzle$size(model.e))
 									])));
 					} else {
 						break _n0$10;
@@ -6239,13 +6271,11 @@ var author$project$Main$update = F2(
 					if (_n0.a) {
 						var answer = _n0.b.a;
 						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{K: answer}),
+							model,
 							A2(
 								author$project$AnaQRam$Puzzle$shuffle,
 								author$project$Main$ShufflePuzzle,
-								author$project$AnaQRam$Puzzle$init(answer)));
+								A2(author$project$AnaQRam$Puzzle$init, answer, model.e)));
 					} else {
 						break _n0$10;
 					}
@@ -6255,7 +6285,7 @@ var author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{g: puzzle}),
+								{e: puzzle}),
 							elm$core$Platform$Cmd$none);
 					} else {
 						break _n0$10;
@@ -6277,7 +6307,7 @@ var author$project$Main$update = F2(
 								return _Utils_Tuple2(
 									_Utils_update(
 										model,
-										{o: 'QR code is not found.'}),
+										{p: 'QR code is not found.'}),
 									elm$core$Platform$Cmd$none);
 							} else {
 								var qrcode = _n0.b.a.a.a;
@@ -6292,7 +6322,7 @@ var author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									o: elm$json$Json$Decode$errorToString(message)
+									p: elm$json$Json$Decode$errorToString(message)
 								}),
 							elm$core$Platform$Cmd$none);
 					}
@@ -6306,7 +6336,7 @@ var author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										g: author$project$AnaQRam$Puzzle$dummy(wordSize)
+										e: author$project$AnaQRam$Puzzle$dummy(wordSize)
 									}),
 								elm$core$Platform$Cmd$none);
 						} else {
@@ -6329,10 +6359,10 @@ var author$project$Main$StartGame = {$: 0};
 var author$project$AnaQRam$Puzzle$map = F2(
 	function (f, puzzle) {
 		return elm$core$Array$toList(
-			A2(elm$core$Array$indexedMap, f, puzzle));
+			A2(elm$core$Array$indexedMap, f, puzzle.f));
 	});
 var author$project$AnaQRam$Puzzle$pieceToString = function (piece) {
-	return piece.M ? '？' : elm$core$String$fromChar(piece.L);
+	return piece.M ? '？' : elm$core$String$fromChar(piece.V);
 };
 var author$project$Main$ClickPiece = function (a) {
 	return {$: 6, a: a};
@@ -6385,7 +6415,7 @@ var author$project$Main$viewPiece = F3(
 	function (model, viewIdx, piece) {
 		var clicked = _Utils_eq(
 			elm$core$Maybe$Just(viewIdx),
-			model.z) ? elm$html$Html$Attributes$class('btn btn-danger') : elm$html$Html$Attributes$class('btn');
+			model.A) ? elm$html$Html$Attributes$class('btn btn-danger') : elm$html$Html$Attributes$class('btn');
 		return A2(
 			elm$html$Html$button,
 			_List_fromArray(
@@ -6413,7 +6443,7 @@ var author$project$Main$viewPuzzle = function (model) {
 		A2(
 			author$project$AnaQRam$Puzzle$map,
 			author$project$Main$viewPiece(model),
-			model.g));
+			model.e));
 };
 var elm$core$Array$filter = F2(
 	function (isGood, array) {
@@ -6431,7 +6461,7 @@ var author$project$AnaQRam$Puzzle$getPiece = F2(
 	function (idx, puzzle) {
 		var pIdx = A2(
 			elm$core$Basics$modBy,
-			elm$core$Array$length(puzzle),
+			author$project$AnaQRam$Puzzle$size(puzzle),
 			idx);
 		return A2(
 			elm$core$Array$get,
@@ -6441,22 +6471,23 @@ var author$project$AnaQRam$Puzzle$getPiece = F2(
 				function (p) {
 					return _Utils_eq(p.N, pIdx);
 				},
-				puzzle));
+				puzzle.f));
 	});
-var elm$core$String$fromList = _String_fromList;
-var author$project$AnaQRam$Puzzle$success = F2(
-	function (answer, puzzle) {
+var elm$core$String$concat = function (strings) {
+	return A2(elm$core$String$join, '', strings);
+};
+var author$project$AnaQRam$Puzzle$success = function (puzzle) {
+	var _n0 = puzzle.I;
+	if (_n0 === '') {
+		return false;
+	} else {
 		return _Utils_eq(
-			answer,
-			elm$core$String$fromList(
+			puzzle.I,
+			elm$core$String$concat(
 				elm$core$Array$toList(
-					A2(
-						elm$core$Array$map,
-						function ($) {
-							return $.L;
-						},
-						puzzle))));
-	});
+					A2(elm$core$Array$map, author$project$AnaQRam$Puzzle$pieceToString, puzzle.f))));
+	}
+};
 var elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (!maybeValue.$) {
@@ -6470,7 +6501,7 @@ var author$project$Main$viewResult = function (model) {
 	var scaned = A2(
 		elm$core$Maybe$andThen,
 		function (idx) {
-			return A2(author$project$AnaQRam$Puzzle$getPiece, idx, model.g);
+			return A2(author$project$AnaQRam$Puzzle$getPiece, idx, model.e);
 		},
 		A2(
 			elm$core$Maybe$andThen,
@@ -6478,13 +6509,13 @@ var author$project$Main$viewResult = function (model) {
 			A2(
 				elm$core$Maybe$map,
 				function ($) {
-					return $.ax;
+					return $.ay;
 				},
-				model.H)));
+				model.J)));
 	var attr = elm$html$Html$Attributes$class('mx-5 mb-2 text-left');
 	var _n0 = _Utils_Tuple3(
-		A2(author$project$AnaQRam$Puzzle$success, model.K, model.g),
-		model.o,
+		author$project$AnaQRam$Puzzle$success(model.e),
+		model.p,
 		scaned);
 	_n0$0:
 	while (true) {
@@ -6504,7 +6535,7 @@ var author$project$Main$viewResult = function (model) {
 						_List_fromArray(
 							[
 								elm$html$Html$text(
-								'Found Piece: ' + elm$core$String$fromChar(piece.L))
+								'Found Piece: ' + elm$core$String$fromChar(piece.V))
 							]));
 				}
 			} else {
@@ -6534,7 +6565,7 @@ var author$project$Main$viewResult = function (model) {
 						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text('Error: ' + model.o)
+							elm$html$Html$text('Error: ' + model.p)
 						]));
 			}
 		}
@@ -6692,12 +6723,12 @@ var author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						elm$html$Html$Attributes$class('my-2'),
-						elm$html$Html$Attributes$id(model.A.aB.aq),
+						elm$html$Html$Attributes$id(model.B.aC.ar),
 						A2(elm$html$Html$Attributes$style, 'background-color', '#000'),
 						elm$html$Html$Attributes$autoplay(true),
 						A2(elm$html$Html$Attributes$attribute, 'playsinline', ''),
-						elm$html$Html$Attributes$width(model.A.aJ.as),
-						elm$html$Html$Attributes$height(model.A.aJ._)
+						elm$html$Html$Attributes$width(model.B.aK.at),
+						elm$html$Html$Attributes$height(model.B.aK._)
 					]),
 				_List_Nil),
 				A2(
@@ -6735,7 +6766,7 @@ var author$project$Main$view = function (model) {
 				elm$html$Html$canvas,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$id(model.A.aB.U),
+						elm$html$Html$Attributes$id(model.B.aC.T),
 						elm$html$Html$Attributes$hidden(true)
 					]),
 				_List_Nil),
@@ -6962,7 +6993,7 @@ var elm$browser$Browser$element = _Browser_element;
 var elm$json$Json$Decode$andThen = _Json_andThen;
 var elm$json$Json$Decode$int = _Json_decodeInt;
 var author$project$Main$main = elm$browser$Browser$element(
-	{aD: author$project$Main$init, aK: author$project$Main$subscriptions, aM: author$project$Main$update, aO: author$project$Main$view});
+	{aE: author$project$Main$init, aL: author$project$Main$subscriptions, aN: author$project$Main$update, aP: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	A2(
 		elm$json$Json$Decode$andThen,
@@ -6971,7 +7002,7 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 				elm$json$Json$Decode$andThen,
 				function (ids) {
 					return elm$json$Json$Decode$succeed(
-						{aB: ids, aJ: size});
+						{aC: ids, aK: size});
 				},
 				A2(
 					elm$json$Json$Decode$field,
@@ -6983,7 +7014,7 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 								elm$json$Json$Decode$andThen,
 								function (capture) {
 									return elm$json$Json$Decode$succeed(
-										{U: capture, aq: video});
+										{T: capture, ar: video});
 								},
 								A2(elm$json$Json$Decode$field, 'capture', elm$json$Json$Decode$string));
 						},
@@ -6999,7 +7030,7 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 						elm$json$Json$Decode$andThen,
 						function (height) {
 							return elm$json$Json$Decode$succeed(
-								{_: height, as: width});
+								{_: height, at: width});
 						},
 						A2(elm$json$Json$Decode$field, 'height', elm$json$Json$Decode$int));
 				},
