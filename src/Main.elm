@@ -26,7 +26,6 @@ type alias Model =
     , answer : String
     , puzzle : Puzzle
     , click : Maybe Int
-    , clear : Bool
     }
 
 
@@ -36,7 +35,7 @@ init config =
         answer =
             "あなくらむ！"
     in
-    ( Model config Nothing "" answer Puzzle.empty Nothing False
+    ( Model config Nothing "" answer Puzzle.empty Nothing
     , Puzzle.shuffle ShufflePuzzle (Puzzle.init answer)
     )
 
@@ -98,11 +97,8 @@ updatePiece idx model =
             let
                 updated =
                     Puzzle.swapPiece idx oldIdx model.puzzle
-
-                clear =
-                    Puzzle.success model.answer updated
             in
-            ( { model | click = Nothing, puzzle = updated, clear = clear }, Cmd.none )
+            ( { model | click = Nothing, puzzle = updated }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -135,7 +131,7 @@ view model =
 viewResult : Model -> Html Msg
 viewResult model =
     let
-        piece_ =
+        scaned =
             model.qrcode
                 |> Maybe.map .data
                 |> Maybe.andThen String.toInt
@@ -144,7 +140,7 @@ viewResult model =
         attr =
             class "mx-5 mb-2 text-left"
     in
-    case ( model.clear, model.error, piece_ ) of
+    case ( Puzzle.success model.answer model.puzzle, model.error, scaned ) of
         ( True, _, _ ) ->
             div [ attr, class "flash" ] [ text "Success!!" ]
 
