@@ -10,18 +10,18 @@
 
 module Main where
 
-import           Paths_anaqram_web         (version)
+import           Paths_anaqram_web      (version)
 import           RIO
 import qualified RIO.ByteString         as B
 
+import           AnaQRam.Cmd
+import           AnaQRam.Env
 import           Configuration.Dotenv   (defaultConfig, loadFile)
 import           Data.Extensible
 import           Data.Extensible.GetOpt
 import           Data.Version           (Version)
 import qualified Data.Version           as Version
 import           Development.GitRev
-import           AnaQRam.Cmd
-import           AnaQRam.Env
 import           Mix
 import           Mix.Plugin.Logger      as MixLogger
 
@@ -58,10 +58,12 @@ showVersion v = unwords
   ]
 
 runCmd :: Options -> FilePath -> IO ()
-runCmd opts _path = Mix.run plugin cmd
+runCmd opts path = do
+  config <- readConfig path
+  let plugin = hsequence
+             $ #logger <@=> MixLogger.buildPlugin logOpts
+            <: #config <@=> pure config
+            <: nil
+  Mix.run plugin cmd
   where
-    plugin :: Mix.Plugin () IO Env
-    plugin = hsequence
-        $ #logger <@=> MixLogger.buildPlugin logOpts
-       <: nil
     logOpts = #handle @= stdout <: #verbose @= (opts ^. #verbose) <: nil

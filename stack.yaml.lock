@@ -35,6 +35,22 @@ packages:
     subdir: mix
     url: https://github.com/matsubara0507/mix.hs/archive/c6c303f9ddf4655a42804ee67d512af6d3b14e98.tar.gz
 - completed:
+    size: 8235
+    subdir: mix-json-logger
+    url: https://github.com/matsubara0507/mix.hs/archive/c6c303f9ddf4655a42804ee67d512af6d3b14e98.tar.gz
+    cabal-file:
+      size: 1086
+      sha256: 4843982f1708e474ad68a9bddc213b5447fb285a71b8c8f720329768056b231b
+    name: mix-json-logger
+    version: 0.1.0
+    sha256: ca6fa0fa725f34c7d70943fe21fa71164d58e226c9ef1d52a7b344232c748d24
+    pantry-tree:
+      size: 334
+      sha256: 372be4778ce622e4ed87a5c77b4aa547a12da67c01570f2927f7a82ad9ec509d
+  original:
+    subdir: mix-json-logger
+    url: https://github.com/matsubara0507/mix.hs/archive/c6c303f9ddf4655a42804ee67d512af6d3b14e98.tar.gz
+- completed:
     size: 5203
     url: https://github.com/matsubara0507/fallible/archive/dfbdce1a0b0c71bcfcea844c94f9cb815f071235.tar.gz
     cabal-file:

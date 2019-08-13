@@ -38,10 +38,15 @@ dependencies:
 - rio >= 0.1.1.0
 - extensible >= 0.4.9
 - mix
+- mix-json-logger
 - fallible
 - elmap
 - servant-elmap
 - extensible-elmap
+- servant-server
+- yaml
+- random
+- warp
 
 library:
   source-dirs: src
