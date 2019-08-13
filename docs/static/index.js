@@ -22,8 +22,8 @@ const constraints = {
   video: {...flags.size, facingMode: "environment" }
 };
 
-function handleSuccess(stream) {
-  const video = document.getElementById(flags.ids.video);
+function handleSuccess(videoId, stream) {
+  const video = document.getElementById(videoId);
   const videoTracks = stream.getVideoTracks();
   console.log('Got stream with constraints:', constraints);
   console.log(`Using video device: ${videoTracks[0].label}`);
@@ -51,27 +51,30 @@ function errorMsg(msg, error) {
   }
 }
 
-async function initCamera() {
+async function initCamera(videoId) {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    handleSuccess(stream);
+    handleSuccess(videoId, stream);
   } catch (e) {
     handleError(e);
   }
 }
 
-const video = document.getElementById(flags.ids.video);
-app.ports.startCamera.subscribe(function() { initCamera() });
+function captureImage(videoId, captureId) {
+  var canvas = document.getElementById(captureId);
+  var video = document.getElementById(videoId);
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0);
+  return ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
+}
+
+app.ports.startCamera.subscribe(function() { initCamera(flags.ids.video) });
 
 app.ports.captureImage.subscribe(function() {
-  var canvas_capture_image = document.getElementById(flags.ids.capture);
-  var cci = canvas_capture_image.getContext('2d');
-  var va = document.getElementById(flags.ids.video);
-  canvas_capture_image.width  = va.videoWidth;
-  canvas_capture_image.height = va.videoHeight;
-  cci.drawImage(va, 0, 0);
-
-  var image = cci.getImageData(0, 0, va.videoWidth, va.videoHeight);
-  var qrcode = jsQR(image.data, image.width, image.height)
+  const imageData = captureImage(flags.ids.video, flags.ids.capture);
+  const qrcode = jsQR(imageData.data, imageData.width, imageData.height)
   app.ports.updateQRCode.send(qrcode);
 });
