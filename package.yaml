@@ -47,6 +47,8 @@ dependencies:
 - yaml
 - random
 - warp
+- servant-blaze
+- blaze-html
 
 library:
   source-dirs: src
@@ -61,11 +63,10 @@ executables:
     - dotenv
 
 tests:
-  anaqram-web-test:
-    main: Driver.hs
+  generate-elm:
+    main: GenerateElm.hs
     source-dirs: test
     dependencies:
     - anaqram-web
-    - tasty
-    - tasty-hspec
-    other-modules: []
+    - servant-elm
+    - process

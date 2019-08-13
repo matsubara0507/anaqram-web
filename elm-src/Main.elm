@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import AnaQRam.Generated.API as API
 import AnaQRam.Puzzle as Puzzle exposing (Piece, Puzzle)
 import AnaQRam.QRCode as QRCode exposing (QRCode)
 import Browser as Browser
@@ -7,6 +8,7 @@ import Dict
 import Html as Html exposing (..)
 import Html.Attributes exposing (attribute, autoplay, class, height, hidden, id, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
+import Http
 import Json.Decode exposing (Error, errorToString)
 
 
@@ -24,6 +26,7 @@ type alias Model =
     { config : QRCode.Config
     , qrcode : Maybe QRCode
     , error : String
+    , sizes : List Int
     , puzzle : Puzzle
     , click : Maybe Int
     }
@@ -31,14 +34,15 @@ type alias Model =
 
 init : QRCode.Config -> ( Model, Cmd Msg )
 init config =
-    ( Model config Nothing "" Puzzle.empty Nothing
-    , Cmd.none
+    ( Model config Nothing "" [] Puzzle.empty Nothing
+    , API.getApiSizes FetchWordSizes
     )
 
 
 type Msg
     = StartGame
-    | ChoiceAnswer String
+    | FetchWordSizes (Result Http.Error (List Int))
+    | FetchAnswer (Result Http.Error String)
     | ShufflePuzzle Puzzle
     | CaptureImage
     | UpdateQRCode (Result Error (Maybe QRCode))
@@ -53,12 +57,24 @@ update msg model =
             ( { model | puzzle = Puzzle.start model.puzzle }
             , Cmd.batch
                 [ QRCode.startCamera ()
-                , Puzzle.problem ChoiceAnswer (Puzzle.size model.puzzle)
+                , API.getApiProblem (Puzzle.size model.puzzle) FetchAnswer
                 ]
             )
 
-        ( True, ChoiceAnswer answer ) ->
+        ( False, FetchWordSizes (Ok sizes) ) ->
+            ( { model | sizes = sizes }, Cmd.none )
+
+        ( False, FetchWordSizes (Err err) ) ->
+            ( { model | error = "can't fetch problem sizes: " ++ httpErrorToString err }, Cmd.none )
+
+        ( True, FetchAnswer (Ok "") ) ->
+            ( { model | error = "problem not found." }, Cmd.none )
+
+        ( True, FetchAnswer (Ok answer) ) ->
             ( model, Puzzle.shuffle ShufflePuzzle (Puzzle.init answer model.puzzle) )
+
+        ( True, FetchAnswer (Err err) ) ->
+            ( { model | error = "can't fetch problem: " ++ httpErrorToString err }, Cmd.none )
 
         ( True, ShufflePuzzle puzzle ) ->
             ( { model | puzzle = puzzle }, Cmd.none )
@@ -154,7 +170,7 @@ viewSelectMenu model =
         [ class "form-select mx-1"
         , onInput (ChoiceWordSize << Maybe.withDefault 0 << String.toInt)
         ]
-        (option [] [ text "Choose Word Size" ] :: List.map viewItem (Dict.keys Puzzle.problems))
+        (option [] [ text "Choose Word Size" ] :: List.map viewItem model.sizes)
 
 
 viewResult : Model -> Html Msg
@@ -205,3 +221,22 @@ viewPiece model viewIdx piece =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     QRCode.updateQRCodeWithDecode UpdateQRCode
+
+
+httpErrorToString : Http.Error -> String
+httpErrorToString error =
+    case error of
+        Http.BadUrl str ->
+            "bad url: " ++ str
+
+        Http.Timeout ->
+            "timeout"
+
+        Http.NetworkError ->
+            "network error"
+
+        Http.BadStatus status ->
+            "bad status: " ++ String.fromInt status
+
+        Http.BadBody str ->
+            "bad body: " ++ str

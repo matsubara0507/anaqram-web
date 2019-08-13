@@ -5,28 +5,58 @@
 module AnaQRam.API where
 
 import           RIO
-import qualified RIO.Map                as Map
-import qualified RIO.Text               as T
-import qualified RIO.Vector             as V
+import qualified RIO.Map                     as Map
+import qualified RIO.Text                    as T
+import qualified RIO.Vector                  as V
 
-import           AnaQRam.Env            (Env)
-import qualified AnaQRam.Env            as AnaQRam
+import           AnaQRam.Env                 (Env)
+import qualified AnaQRam.Env                 as AnaQRam
 import           Data.Extensible
 import           Data.Fallible
-import           Mix.Plugin.Logger      ()
-import qualified Mix.Plugin.Logger.JSON as Mix
+import           Mix.Plugin.Logger           ()
+import qualified Mix.Plugin.Logger.JSON      as Mix
 import           Servant
+import           Servant.HTML.Blaze
+import           Servant.Server.StaticFiles  (serveDirectoryFileServer)
 import           System.Random
+import           Text.Blaze.Html5            ((!))
+import qualified Text.Blaze.Html5            as H
+import qualified Text.Blaze.Html5.Attributes as H hiding (title)
 
 type API
-      = "api" :> "sizes" :> Get '[JSON] [Int]
-   :<|> "api" :> "problem" :> QueryParam' '[Required] "size" Int :> Get '[JSON] String
+      = Get '[HTML] H.Html
+   :<|> "static" :> Raw
+   :<|> "api" :> CRUD
+
+type CRUD
+      = "sizes" :> Get '[JSON] [Int]
+   :<|> "problem" :> QueryParam' '[Required] "size" Int :> Get '[JSON] String
 
 api :: Proxy API
 api = Proxy
 
 server :: ServerT API (RIO Env)
-server = getSizes :<|> getProblem
+server = indexHtml "AnaQRam Web"
+    :<|> serveDirectoryFileServer "static"
+    :<|> getSizes
+    :<|> getProblem
+  where
+    indexHtml title = pure $ H.docTypeHtml $ do
+      H.head $ do
+        stylesheet primerCss
+        H.title $ H.text title
+      H.div ! H.class_ "Box text-center mt-3 container-sm" $ do
+        H.div ! H.class_ "Box-header" $
+          H.h1 ! H.class_ "Box-title" $ H.text title
+        H.div ! H.class_ "Box-Body" ! H.id "main" $ H.text ""
+      H.script ! H.src "https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js" $ H.text ""
+      H.script ! H.src "static/main.js" $ H.text ""
+      H.script ! H.src "static/index.js" $ H.text ""
+    primerCss = "https://cdnjs.cloudflare.com/ajax/libs/Primer/11.0.0/build.css"
+
+stylesheet :: H.AttributeValue -> H.Html
+stylesheet url =
+  H.link ! H.rel "stylesheet" ! H.type_ "text/css" ! H.href url ! H.media "all"
 
 getSizes :: RIO Env [Int]
 getSizes = do
