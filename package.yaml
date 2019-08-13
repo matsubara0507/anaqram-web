@@ -1,0 +1,66 @@
+name:                anaqram-web
+version:             0.1.0.0
+homepage:            https://github.com/matsubara0507/anaqram-web#readme
+license:             MIT
+author:              MATSUBARA Nobutada
+maintainer:          t12307043@gunma-u.ac.jp
+copyright:           MATSUBARA Nobutada
+category:            Web
+description:         Please see the README on GitHub at <https://github.com/matsubara0507/anaqram-web#readme>
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wredundant-constraints
+
+default-extensions:
+- NoImplicitPrelude
+
+- ConstraintKinds
+- FlexibleContexts
+- FlexibleInstances
+- GeneralizedNewtypeDeriving
+- OverloadedStrings
+- PolyKinds
+- RankNTypes
+- StandaloneDeriving
+- TypeFamilies
+- TypeSynonymInstances
+
+dependencies:
+- base >= 4.7 && < 5
+- rio >= 0.1.1.0
+- extensible >= 0.4.9
+- mix
+- fallible
+- elmap
+- servant-elmap
+- extensible-elmap
+
+library:
+  source-dirs: src
+
+executables:
+  anaqram-web:
+    main: Main.hs
+    source-dirs: app
+    dependencies:
+    - anaqram-web
+    - gitrev
+    - dotenv
+
+tests:
+  anaqram-web-test:
+    main: Driver.hs
+    source-dirs: test
+    dependencies:
+    - anaqram-web
+    - tasty
+    - tasty-hspec
+    other-modules: []

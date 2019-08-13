@@ -1,0 +1,18 @@
+resolver: lts-14.0
+packages:
+- '.'
+extra-deps:
+- extensible-0.6
+- membership-0
+- github: matsubara0507/mix.hs
+  commit: c6c303f9ddf4655a42804ee67d512af6d3b14e98
+  subdirs:
+  - mix
+- github: matsubara0507/fallible
+  commit: dfbdce1a0b0c71bcfcea844c94f9cb815f071235
+- github: matsubara0507/elmap.hs
+  commit: a1539c3be6e8b5757a2a10a55e7c1b19c1fc76fd
+  subdirs:
+  - elmap
+  - servant-elmap
+  - extensible-elmap
